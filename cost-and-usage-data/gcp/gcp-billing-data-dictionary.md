@@ -244,7 +244,45 @@ The data generator creates multiple output files for comprehensive analysis:
           
 ### Data Relationships          
           
-The files are interconnected through these key relationships:          
+The files are interconnected through these key relationships:    
+
+```mermaid
+graph LR
+    A[gcp_billing_export.csv] -->|project.id, project.name| B[project_lifecycle_mapping.csv]
+    A -->|resource.name| C[resource_labels.csv]
+    A -->|invoice.month, project.id, cost| D[cost_summary_by_project.csv]
+    A -->|invoice.month, service.description, cost| E[cost_summary_by_service.csv]
+    B -->|business_unit| F[cost_summary_by_business_unit.csv]
+    C -->|key='chargeback-entity', value| G[chargeback_by_entity.csv]
+    C -->|key='allocation-method', value| H[cost_by_allocation_method.csv]
+    A -->|cost, credits| I[discount_impact_by_project.csv]
+    A -->|cost, credits| J[discount_impact_by_service.csv]
+    A -->|resource.name, cost, credits| K[top_discount_impact_resources.csv]
+    
+    subgraph Primary Data
+        A
+        B
+        C
+    end
+    
+    subgraph Summary Reports
+        D
+        E
+        F
+    end
+    
+    subgraph Chargeback Analysis
+        G
+        H
+    end
+    
+    subgraph Discount Analysis
+        I
+        J
+        K
+    end
+```
+	
           
 1. **Resource Identification Chain**:          
    - `resource.name` in main billing data links to `resource_name` in labels          
